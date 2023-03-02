@@ -1,0 +1,24 @@
+# Migrate Centos8 to Oracle Linux 8
+
+systemctl stop dnf-automatic.timer
+systemctl disable dnf-automatic.timer
+cd /etc/yum.repos.d/
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+wget http://public-yum.oracle.com/RPM-GPG-KEY-oracle-ol8 -O /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle
+yum update -y
+cd ~
+curl -O https://raw.githubusercontent.com/oracle/centos2ol/main/centos2ol.sh
+bash centos2ol.sh
+grubby --default-kernel
+reboot
+
+yum update -y
+# remove old kernels
+dnf -y remove --oldinstallonly --setopt installonly_limit=3 kernel
+reboot
+
+#config automatic updates
+systemctl start dnf-automatic.timer
+systemctl enable --now dnf-automatic.timer
+systemctl enable --now dnf-automatic-install.timer
