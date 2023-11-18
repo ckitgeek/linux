@@ -1,0 +1,7 @@
+sudo apt-get install libnfc-bin ruby-nfc autoconf libnfc-dev
+sudo apt-get install mfoc
+sudo modprobe -r pn533_usb
+sudo modprobe -r pn533
+sudo nfc-list
+sudo mfoc -P 500 -O original1.dmp
+
